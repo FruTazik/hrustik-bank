@@ -1,19 +1,45 @@
+// Конфигурация Supabase
 const supabaseUrl = 'https://yuhthantfmbsozvwdeuj.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1aHRoYW50Zm1ic296dndkZXVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDEzODEsImV4cCI6MjA5MjcxNzM4MX0.uzPZ7xL75IoixVJdcaoAwZSkA1WuhpINxWsjE5iBpg4';
 const supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
 
 let userEmail = "";
 
-// 1. Проверка почты (Вход или Регистрация)
+// Ждем полной загрузки страницы
+document.addEventListener('DOMContentLoaded', () => {
+    console.log("Логика авторизации запущена");
+
+    // Обработка кнопки "Продолжить" через прослушиватель (самый надежный способ)
+    const continueBtn = document.getElementById('btn-continue');
+    if (continueBtn) {
+        continueBtn.addEventListener('click', checkEmail);
+    }
+
+    // Обработка ввода в OTP (автопереход)
+    const otpFields = document.querySelectorAll('.otp-field');
+    otpFields.forEach((field, index) => {
+        field.addEventListener('input', (e) => {
+            if (e.target.value && index < 5) otpFields[index + 1].focus();
+        });
+    });
+});
+
+// 1. Проверка почты
 async function checkEmail() {
     const emailInput = document.getElementById('email-input');
-    const emailValue = emailInput.value.trim();
+    const emailError = document.getElementById('email-error');
     const btn = document.getElementById('btn-continue');
+    
+    userEmail = emailInput.value.trim();
 
+    // Сброс стилей
     emailInput.classList.remove('invalid');
+    emailError.style.display = 'none';
 
-    if (!emailValue || !emailValue.includes('@')) {
+    // Валидация почты
+    if (!userEmail || !userEmail.includes('@') || userEmail.length < 5) {
         emailInput.classList.add('invalid');
+        emailError.style.display = 'block';
         return;
     }
 
@@ -21,109 +47,100 @@ async function checkEmail() {
     btn.disabled = true;
 
     try {
-        // Проверяем, есть ли пользователь в нашей таблице profiles
+        // Ищем пользователя в профилях
         const { data, error } = await supabase
             .from('profiles')
             .select('email')
-            .eq('email', emailValue)
+            .eq('email', userEmail)
             .maybeSingle();
 
-        userEmail = emailValue;
+        if (error) throw error;
 
         if (data) {
-            // Если есть -> сразу шлем OTP для входа
+            // Пользователь есть -> шлем OTP
             await sendOTP(userEmail);
         } else {
-            // Если нет -> идем на шаг регистрации
+            // Пользователя нет -> показываем регистрацию
             showStep('step-register');
         }
     } catch (err) {
-        console.error(err);
+        console.error("Ошибка Supabase:", err.message);
+        alert("Ошибка связи с базой данных");
     } finally {
         btn.innerText = "Продолжить";
         btn.disabled = false;
     }
 }
 
-// 2. Логика регистрации
+// 2. Регистрация
 async function startRegistration() {
     const name = document.getElementById('reg-name');
     const birth = document.getElementById('reg-birth');
     const pass = document.getElementById('reg-pass');
-    let valid = true;
+    let hasError = false;
 
     // Сброс ошибок
-    [name, birth, pass].forEach(i => i.classList.remove('invalid'));
+    [name, birth, pass].forEach(el => el.classList.remove('invalid'));
 
-    if (!name.value) { name.classList.add('invalid'); valid = false; }
+    if (!name.value.trim()) { name.classList.add('invalid'); hasError = true; }
     
-    // Проверка на 7 лет
+    // Проверка возраста
     const birthDate = new Date(birth.value);
     const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    if (age < 7) { birth.classList.add('invalid'); valid = false; }
+    const age = today.getFullYear() - birthDate.getFullYear();
+    if (!birth.value || age < 7) { birth.classList.add('invalid'); hasError = true; }
 
-    if (pass.value.length < 6) { pass.classList.add('invalid'); valid = false; }
+    if (pass.value.length < 6) { pass.classList.add('invalid'); hasError = true; }
 
-    if (valid) {
-        // Регистрируем в Supabase и шлем письмо подтверждения
+    if (hasError) return;
+
+    try {
         const { error } = await supabase.auth.signUp({
             email: userEmail,
             password: pass.value,
-            options: { data: { full_name: name.value, birthday: birth.value } }
+            options: { 
+                data: { 
+                    full_name: name.value, 
+                    birthday: birth.value 
+                } 
+            }
         });
 
-        if (!error) {
-            document.getElementById('otp-message').innerText = `Мы отправили код на почту ${maskEmail(userEmail)}`;
-            showStep('step-otp');
-        } else {
-            alert(error.message);
-        }
+        if (error) throw error;
+
+        document.getElementById('otp-message').innerText = `Код отправлен на ${maskEmail(userEmail)}`;
+        showStep('step-otp');
+    } catch (err) {
+        alert(err.message);
     }
 }
 
-// Показ нужного шага
-function showStep(stepId) {
+// Утилиты
+function showStep(id) {
     document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
-    document.getElementById(stepId).classList.add('active');
+    document.getElementById(id).classList.add('active');
 }
 
-// Отправка OTP кода (Magic Link / OTP)
 async function sendOTP(email) {
     const { error } = await supabase.auth.signInWithOtp({ email: email });
-    if (!error) {
-        document.getElementById('otp-message').innerText = `Мы отправили код на почту ${maskEmail(email)}`;
-        showStep('step-otp');
-    }
+    if (error) throw error;
+    document.getElementById('otp-message').innerText = `Код отправлен на ${maskEmail(email)}`;
+    showStep('step-otp');
 }
 
-// Маскировка почты (te****@gmail.com)
 function maskEmail(email) {
-    const [name, domain] = email.split('@');
-    return name.substring(0, 2) + "****" + "@" + domain;
+    const [name, dom] = email.split('@');
+    return name.substring(0, 3) + "***@" + dom;
 }
-
-// Google Auth
-async function signInWithGoogle() {
-    await supabase.auth.signInWithOAuth({ provider: 'google' });
-}
-
-// Авто-переход по полям OTP
-const otpFields = document.querySelectorAll('.otp-field');
-otpFields.forEach((field, index) => {
-    field.addEventListener('input', (e) => {
-        if (e.target.value && index < 5) otpFields[index + 1].focus();
-    });
-});
 
 async function verifyOTP() {
     let token = "";
-    otpFields.forEach(f => token += f.value);
+    document.querySelectorAll('.otp-field').forEach(f => token += f.value);
     
-    const { data, error } = await supabase.auth.verifyOTP({
+    const { error } = await supabase.auth.verifyOTP({
         email: userEmail,
         token: token,
-        type: 'signup' // или 'magiclink' в зависимости от настроек
+        type: 'signup' 
     });
 
     if (!error) {
@@ -131,4 +148,8 @@ async function verifyOTP() {
     } else {
         alert("Неверный код");
     }
+}
+
+async function signInWithGoogle() {
+    await supabase.auth.signInWithOAuth({ provider: 'google' });
 }
