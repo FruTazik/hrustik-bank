@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRUSTIK | Добро пожаловать</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="welcome_style.css">
+</head>
+<body>
+
+    <div class="money-rain">
+        <img src="50.png" class="bill b1" alt="50">
+        <img src="100.png" class="bill b2" alt="100">
+        <img src="500.png" class="bill b3" alt="500">
+        <img src="1000.png" class="bill b4" alt="1000">
+        <img src="100.png" class="bill b5" alt="100">
+    </div>
+
+    <nav class="top-nav">
+        <div class="logo">HRUSTIK<span>.</span></div>
+        <div class="auth-btns">
+            <a href="auth.html?mode=login" class="btn-blue">Войти</a>
+            <a href="auth.html?mode=register" class="btn-white">Регистрация</a>
+        </div>
+    </nav>
+
+    <main class="hero-content">
+        <h1 class="reveal">Твой путь в мир <br><span class="gradient">цифровых активов</span></h1>
+        <p class="reveal delay">Покупай, продавай и обменивай предметы за Хрустики на самом безопасном маркетплейсе.</p>
+        
+        <div class="main-actions reveal delay-2">
+            <a href="index.html" class="btn-blue-large">В магазин</a>
+            <a href="#about" class="btn-white-large">Что такое хрустики?</a>
+        </div>
+    </main>
+
+    <script>
+        // Простая логика: если человек уже заходил (есть токен), кидаем в магазин
+        // В будущем здесь будет проверка Supabase сессии
+        if(localStorage.getItem('hrustik_user_visited')) {
+            // window.location.href = 'index.html'; 
+        }
+    </script>
+</body>
+</html>
