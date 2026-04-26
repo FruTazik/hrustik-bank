@@ -1,72 +1,96 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HRUSTIK | Маркетплейс</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
+/* Обновленный хедер */
+.shop-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 40px;
+    background: #fff;
+    gap: 20px;
+}
 
-    <header class="shop-header">
-        <div class="logo-small">HRUSTIK<span>.</span></div>
-        
-        <div class="search-container">
-            <div class="search-bar">
-                <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#999999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M21 21L16.65 16.65" stroke="#999999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                <input type="text" placeholder="Поиск" id="global-search">
-            </div>
-        </div>
+/* Поиск */
+.search-container {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
 
-        <div class="user-actions" id="auth-section">
-            <a href="welcome.html" class="btn-home">Главная страница</a>
-            <div id="user-display">
-                <a href="auth.html" class="btn-login-round">Войти</a>
-            </div>
-        </div>
-    </header>
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #f5f5f7; /* Цвет фона как у иконки товара */
+    border-radius: 14px;
+    padding: 10px 18px;
+    width: 100%;
+    max-width: 450px;
+    transition: 0.2s;
+}
 
-    <nav class="tabs-container">
-        <div class="tabs-scroll">
-            <a href="#" class="tab active">Главная</a>
-            <a href="#" class="tab">$Донат</a>
-            <a href="#" class="tab">Аккаунты</a>
-            <a href="#" class="tab">Подписки</a>
-            <a href="#" class="tab">Предметы</a>
-            <a href="#" class="tab">Скины</a>
-            <a href="#" class="tab">Steam</a>
-        </div>
-    </nav>
+.search-bar:focus-within {
+    background-color: #ededef;
+}
 
-    <main class="content">
-        <h2 class="category-title">Популярное сегодня</h2>
-        
-        <div class="product-grid">
-            <div class="product-card">
-                <div class="card-date">Дата создания: 20.04.2026</div>
-                <div class="card-img-wrapper">
-                    <img src="100.png" alt="Товар">
-                </div>
-                <div class="card-info">
-                    <div class="card-price">1 500 Хрустиков</div>
-                    <div class="card-title">Набор валюты "Золотой Хруст"</div>
-                </div>
-            </div>
-        </div>
-    </main>
+.search-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 12px;
+}
 
-    <script src="index_logic.js"></script>
-    <script>
-        // Твоя логика первого визита
-        if (!localStorage.getItem('hrustik_user_visited')) {
-            localStorage.setItem('hrustik_user_visited', 'true');
-            window.location.href = 'welcome.html';
-        }
-    </script>
-</body>
-</html>
+.search-bar input {
+    border: none;
+    background: transparent;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    color: #1d1d1f;
+    font-family: 'Inter', sans-serif;
+}
+
+.search-bar input::placeholder {
+    color: #999999;
+}
+
+/* Кнопки */
+.user-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-home {
+    text-decoration: none;
+    color: #0049AF;
+    border: 2px solid #0049AF;
+    background: white;
+    padding: 9px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: 0.2s;
+    white-space: nowrap;
+}
+
+.btn-home:hover {
+    background: #f0f5ff;
+}
+
+/* Инфо о вошедшем пользователе */
+.user-logged-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.user-logged-info span {
+    font-weight: 600;
+    color: #1d1d1f;
+}
+
+.profile-avatar-mini {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background-color: #e0e0e0; /* Тот самый серый */
+    object-fit: cover;
+}
