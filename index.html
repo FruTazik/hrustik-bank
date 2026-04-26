@@ -6,26 +6,42 @@
     <title>HRUSTIK | Маркетплейс</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
     <header class="shop-header">
         <div class="logo-small">HRUSTIK<span>.</span></div>
-        <nav class="tabs-container">
-            <div class="tabs-scroll">
-                <a href="#" class="tab active">Главная</a>
-                <a href="#" class="tab">$Донат</a>
-                <a href="#" class="tab">Аккаунты</a>
-                <a href="#" class="tab">Подписки</a>
-                <a href="#" class="tab">Предметы</a>
-                <a href="#" class="tab">Скины</a>
-                <a href="#" class="tab">Steam</a>
+        
+        <div class="search-container">
+            <div class="search-bar">
+                <svg class="search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M11 19C15.4183 19 19 15.4183 19 11C19 6.58172 15.4183 3 11 3C6.58172 3 3 6.58172 3 11C3 15.4183 6.58172 19 11 19Z" stroke="#999999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M21 21L16.65 16.65" stroke="#999999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <input type="text" placeholder="Поиск" id="global-search">
             </div>
-        </nav>
-        <div class="user-actions">
-            <a href="auth.html" class="btn-login-round">Войти</a>
+        </div>
+
+        <div class="user-actions" id="auth-section">
+            <a href="welcome.html" class="btn-home">Главная страница</a>
+            <div id="user-display">
+                <a href="auth.html" class="btn-login-round">Войти</a>
+            </div>
         </div>
     </header>
+
+    <nav class="tabs-container">
+        <div class="tabs-scroll">
+            <a href="#" class="tab active">Главная</a>
+            <a href="#" class="tab">$Донат</a>
+            <a href="#" class="tab">Аккаунты</a>
+            <a href="#" class="tab">Подписки</a>
+            <a href="#" class="tab">Предметы</a>
+            <a href="#" class="tab">Скины</a>
+            <a href="#" class="tab">Steam</a>
+        </div>
+    </nav>
 
     <main class="content">
         <h2 class="category-title">Популярное сегодня</h2>
@@ -44,9 +60,9 @@
         </div>
     </main>
 
+    <script src="index_logic.js"></script>
     <script>
-        // ЛОГИКА ПЕРЕХОДА:
-        // Если в памяти нет отметки, что пользователь видел приветствие - отправляем на welcome.html
+        // Твоя логика первого визита
         if (!localStorage.getItem('hrustik_user_visited')) {
             localStorage.setItem('hrustik_user_visited', 'true');
             window.location.href = 'welcome.html';
