@@ -17,14 +17,14 @@
             
             <div class="input-group">
                 <input type="email" id="email-input" placeholder="example@mail.com">
-                <span class="error-text" id="email-error">Введите корректный адрес почты</span>
+                <span class="error-text" id="email-error" style="display: none;">Введите корректный адрес почты</span>
             </div>
 
-            <button class="btn-blue" id="btn-continue" onclick="checkEmail()">Продолжить</button>
+            <button class="btn-blue" id="btn-continue">Продолжить</button>
             
             <div class="divider">или</div>
             
-            <button class="btn-google" onclick="signInWithGoogle()">
+            <button class="btn-google" id="btn-google">
                 <img src="google.png" alt="G">
                 Войти через Google
             </button>
@@ -50,7 +50,7 @@
                 <span class="error-text">Минимум 6 символов</span>
             </div>
 
-            <button class="btn-blue" onclick="startRegistration()">Создать аккаунт</button>
+            <button class="btn-blue" id="btn-register">Создать аккаунт</button>
         </div>
 
         <div id="step-otp" class="step">
@@ -66,7 +66,7 @@
                 <input type="text" maxlength="1" class="otp-field">
             </div>
 
-            <button class="btn-blue" onclick="verifyOTP()">Войти</button>
+            <button class="btn-blue" id="btn-verify">Войти</button>
         </div>
     </div>
 
