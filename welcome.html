@@ -14,14 +14,13 @@
         <img src="100.png" class="bill b2" alt="100">
         <img src="500.png" class="bill b3" alt="500">
         <img src="1000.png" class="bill b4" alt="1000">
-        <img src="100.png" class="bill b5" alt="100">
     </div>
 
     <nav class="top-nav">
         <div class="logo">HRUSTIK<span>.</span></div>
         <div class="auth-btns">
-            <a href="auth.html?mode=login" class="btn-blue">Войти</a>
-            <a href="auth.html?mode=register" class="btn-white">Регистрация</a>
+            <a href="auth.html" class="btn-blue">Войти</a>
+            <a href="auth.html" class="btn-white">Регистрация</a>
         </div>
     </nav>
 
@@ -36,11 +35,8 @@
     </main>
 
     <script>
-        // Простая логика: если человек уже заходил (есть токен), кидаем в магазин
-        // В будущем здесь будет проверка Supabase сессии
-        if(localStorage.getItem('hrustik_user_visited')) {
-            // window.location.href = 'index.html'; 
-        }
+        // Если пользователь уже залогинен, можно сразу редиректить в магазин
+        // Но пока оставим так, чтобы ты мог тестировать главную
     </script>
 </body>
 </html>
