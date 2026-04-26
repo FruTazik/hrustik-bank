@@ -1,77 +1,89 @@
-// ПРОВЕРКА ЗАГРУЗКИ: Как только обновишь страницу, должен выскочить алерт.
-// Если его нет — значит файл auth_logic.js не найден или путь к нему неверный!
-console.log("СКРИПТ ЗАГРУЖЕН");
-
+// Используем var, чтобы избежать ошибок повторного объявления (SyntaxError)
 var supabaseUrl = 'https://yuhthantfmbsozvwdeuj.supabase.co';
 var supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1aHRoYW50Zm1ic296dndkZXVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDEzODEsImV4cCI6MjA5MjcxNzM4MX0.uzPZ7xL75IoixVJdcaoAwZSkA1WuhpINxWsjE5iBpg4';
-var supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
+
+// Проверка: какая версия библиотеки доступна в глобальном окне
+var client = window.supabasejs || window.supabase;
+var supabase = client.createClient(supabaseUrl, supabaseKey);
 
 var userEmail = "";
 
-// Функция для переключения шагов
-function changeStep(id) {
-    document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('active'); });
-    document.getElementById(id).classList.add('active');
-}
+// Привязываем кнопки сразу после загрузки страницы
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("HRUSTIK AUTH: Инициализация...");
 
-// 1. ПРОВЕРКА ПОЧТЫ
+    // Привязка кнопки продолжить
+    var btnCont = document.getElementById('btn-continue');
+    if (btnCont) btnCont.onclick = checkUserEmail;
+
+    // Привязка кнопки Google
+    var btnGoog = document.getElementById('btn-google');
+    if (btnGoog) btnGoog.onclick = signInWithGoogle;
+
+    // Привязка регистрации
+    var btnReg = document.getElementById('btn-register-submit');
+    if (btnReg) btnReg.onclick = processRegistration;
+
+    // Привязка OTP
+    var btnOTP = document.getElementById('btn-verify-otp');
+    if (btnOTP) btnOTP.onclick = processVerifyOTP;
+});
+
 async function checkUserEmail() {
-    console.log("Нажата кнопка Продолжить");
     var emailInput = document.getElementById('email-input');
-    var emailError = document.getElementById('email-error');
-    
     userEmail = emailInput.value.trim();
-    
-    if (!userEmail || !userEmail.includes('@')) {
-        emailInput.classList.add('invalid');
-        emailError.style.display = 'block';
+
+    if (!userEmail.includes('@')) {
+        document.getElementById('email-error').style.display = 'block';
         return;
     }
 
     try {
-        var { data, error } = await supabase
-            .from('profiles')
-            .select('email')
-            .eq('email', userEmail)
-            .maybeSingle();
+        // Проверяем, есть ли такой профиль в таблице profiles
+        var { data } = await supabase.from('profiles').select('email').eq('email', userEmail).maybeSingle();
 
         if (data) {
-            // Шлем код для входа
+            // Пользователь найден — отправляем OTP для входа
             await supabase.auth.signInWithOtp({ email: userEmail });
-            document.getElementById('otp-message').innerText = "Код для входа отправлен на " + userEmail;
+            document.getElementById('otp-message').innerText = "Код отправлен на " + userEmail;
             changeStep('step-otp');
         } else {
-            // Ведем на регистрацию
+            // Пользователя нет — отправляем на регистрацию
             changeStep('step-register');
         }
     } catch (e) {
-        alert("Ошибка базы: " + e.message);
+        alert("Ошибка: " + e.message);
     }
 }
 
-// 2. РЕГИСТРАЦИЯ
 async function processRegistration() {
     var name = document.getElementById('reg-name').value;
     var pass = document.getElementById('reg-pass').value;
     var birth = document.getElementById('reg-birth').value;
 
-    try {
-        var { error } = await supabase.auth.signUp({
-            email: userEmail,
-            password: pass,
-            options: { data: { full_name: name, birthday: birth } }
-        });
-        if (error) throw error;
-        changeStep('step-otp');
-    } catch (e) {
-        alert(e.message);
-    }
+    var { error } = await supabase.auth.signUp({
+        email: userEmail,
+        password: pass,
+        options: { data: { full_name: name, birthday: birth } }
+    });
+
+    if (error) alert(error.message);
+    else changeStep('step-otp');
 }
 
-// 3. ПОДТВЕРЖДЕНИЕ OTP
+async function signInWithGoogle() {
+    await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { 
+            queryParams: { prompt: 'select_account' },
+            redirectTo: window.location.origin + window.location.pathname.replace('auth.html', 'index.html')
+        }
+    });
+}
+
 async function processVerifyOTP() {
     var token = "";
-    document.querySelectorAll('.otp-field').forEach(function(f) { token += f.value; });
+    document.querySelectorAll('.otp-field').forEach(f => token += f.value);
     
     var { error } = await supabase.auth.verifyOTP({
         email: userEmail,
@@ -79,32 +91,11 @@ async function processVerifyOTP() {
         type: 'email'
     });
 
-    if (!error) {
-        window.location.href = 'index.html';
-    } else {
-        alert("Ошибка кода");
-    }
+    if (error) alert("Неверный код");
+    else window.location.href = 'index.html';
 }
 
-// 4. GOOGLE
-async function signInWithGoogle() {
-    await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin + '/index.html' }
-    });
+function changeStep(id) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
 }
-
-// ПРИВЯЗКА СОБЫТИЙ (Напрямую)
-window.onload = function() {
-    console.log("ОКНО ЗАГРУЖЕНО, ПРИВЯЗЫВАЮ КНОПКИ");
-    
-    document.getElementById('btn-continue').onclick = checkUserEmail;
-    document.getElementById('btn-google').onclick = signInWithGoogle;
-    
-    // Для регистрации и OTP кнопок (найдем по тексту или ID если добавил)
-    var regBtn = document.getElementById('btn-register-submit');
-    if(regBtn) regBtn.onclick = processRegistration;
-
-    var verifyBtn = document.getElementById('btn-verify-otp');
-    if(verifyBtn) verifyBtn.onclick = processVerifyOTP;
-};
