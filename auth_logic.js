@@ -1,74 +1,32 @@
-// Используем var, чтобы не было ошибки "Identifier has already been declared"
+// ПРОВЕРКА ЗАГРУЗКИ: Как только обновишь страницу, должен выскочить алерт.
+// Если его нет — значит файл auth_logic.js не найден или путь к нему неверный!
+console.log("СКРИПТ ЗАГРУЖЕН");
+
 var supabaseUrl = 'https://yuhthantfmbsozvwdeuj.supabase.co';
 var supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1aHRoYW50Zm1ic296dndkZXVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDEzODEsImV4cCI6MjA5MjcxNzM4MX0.uzPZ7xL75IoixVJdcaoAwZSkA1WuhpINxWsjE5iBpg4';
 var supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
 
 var userEmail = "";
 
-// Главная функция, которая оживляет всё
-document.addEventListener('DOMContentLoaded', function() {
-    console.log("HRUSTIK: Система авторизации готова");
+// Функция для переключения шагов
+function changeStep(id) {
+    document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('active'); });
+    document.getElementById(id).classList.add('active');
+}
 
-    // 1. Кнопка "Продолжить" (Шаг 1)
-    var btnContinue = document.getElementById('btn-continue');
-    if (btnContinue) {
-        btnContinue.addEventListener('click', function() {
-            checkUserEmail();
-        });
-    }
-
-    // 2. Кнопка "Создать аккаунт" (Шаг 2)
-    var btnRegister = document.getElementById('btn-register-submit');
-    if (btnRegister) {
-        btnRegister.addEventListener('click', function() {
-            processRegistration();
-        });
-    }
-
-    // 3. Кнопка "Войти" через OTP (Шаг 3)
-    var btnVerify = document.getElementById('btn-verify-otp');
-    if (btnVerify) {
-        btnVerify.addEventListener('click', function() {
-            processVerifyOTP();
-        });
-    }
-
-    // 4. Кнопка Google
-    var btnGoogle = document.getElementById('btn-google');
-    if (btnGoogle) {
-        btnGoogle.addEventListener('click', function() {
-            signInWithGoogle();
-        });
-    }
-
-    // 5. Автопереход в полях OTP
-    var otpFields = document.querySelectorAll('.otp-field');
-    otpFields.forEach(function(field, index) {
-        field.addEventListener('input', function(e) {
-            if (e.target.value && index < 5) otpFields[index + 1].focus();
-        });
-    });
-});
-
-// --- ЛОГИКА ФУНКЦИЙ ---
-
+// 1. ПРОВЕРКА ПОЧТЫ
 async function checkUserEmail() {
+    console.log("Нажата кнопка Продолжить");
     var emailInput = document.getElementById('email-input');
     var emailError = document.getElementById('email-error');
-    var btn = document.getElementById('btn-continue');
     
     userEmail = emailInput.value.trim();
-    emailInput.classList.remove('invalid');
-    emailError.style.display = 'none';
-
+    
     if (!userEmail || !userEmail.includes('@')) {
         emailInput.classList.add('invalid');
         emailError.style.display = 'block';
         return;
     }
-
-    btn.innerText = "Минутку...";
-    btn.disabled = true;
 
     try {
         var { data, error } = await supabase
@@ -77,63 +35,40 @@ async function checkUserEmail() {
             .eq('email', userEmail)
             .maybeSingle();
 
-        if (error) throw error;
-
         if (data) {
-            // Юзер есть -> шлем код
-            sendLoginOTP(userEmail);
+            // Шлем код для входа
+            await supabase.auth.signInWithOtp({ email: userEmail });
+            document.getElementById('otp-message').innerText = "Код для входа отправлен на " + userEmail;
+            changeStep('step-otp');
         } else {
-            // Юзера нет -> на регистрацию
+            // Ведем на регистрацию
             changeStep('step-register');
         }
-    } catch (err) {
-        console.error(err);
-        alert("Ошибка связи с базой");
-    } finally {
-        btn.innerText = "Продолжить";
-        btn.disabled = false;
+    } catch (e) {
+        alert("Ошибка базы: " + e.message);
     }
 }
 
+// 2. РЕГИСТРАЦИЯ
 async function processRegistration() {
-    var name = document.getElementById('reg-name');
-    var birth = document.getElementById('reg-birth');
-    var pass = document.getElementById('reg-pass');
-    var hasError = false;
-
-    [name, birth, pass].forEach(function(el) { el.classList.remove('invalid'); });
-
-    if (!name.value.trim()) { name.classList.add('invalid'); hasError = true; }
-    if (!birth.value) { birth.classList.add('invalid'); hasError = true; }
-    if (pass.value.length < 6) { pass.classList.add('invalid'); hasError = true; }
-
-    if (hasError) return;
+    var name = document.getElementById('reg-name').value;
+    var pass = document.getElementById('reg-pass').value;
+    var birth = document.getElementById('reg-birth').value;
 
     try {
         var { error } = await supabase.auth.signUp({
             email: userEmail,
-            password: pass.value,
-            options: { data: { full_name: name.value, birthday: birth.value } }
+            password: pass,
+            options: { data: { full_name: name, birthday: birth } }
         });
-
         if (error) throw error;
-        document.getElementById('otp-message').innerText = "Код отправлен на " + userEmail;
         changeStep('step-otp');
-    } catch (err) {
-        alert(err.message);
+    } catch (e) {
+        alert(e.message);
     }
 }
 
-async function sendLoginOTP(email) {
-    var { error } = await supabase.auth.signInWithOtp({ email: email });
-    if (error) {
-        alert(error.message);
-    } else {
-        document.getElementById('otp-message').innerText = "Код для входа отправлен на " + email;
-        changeStep('step-otp');
-    }
-}
-
+// 3. ПОДТВЕРЖДЕНИЕ OTP
 async function processVerifyOTP() {
     var token = "";
     document.querySelectorAll('.otp-field').forEach(function(f) { token += f.value; });
@@ -141,26 +76,35 @@ async function processVerifyOTP() {
     var { error } = await supabase.auth.verifyOTP({
         email: userEmail,
         token: token,
-        type: 'email' 
+        type: 'email'
     });
 
     if (!error) {
         window.location.href = 'index.html';
     } else {
-        alert("Код неверный или просрочен");
+        alert("Ошибка кода");
     }
 }
 
+// 4. GOOGLE
 async function signInWithGoogle() {
     await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: {
-            redirectTo: window.location.origin + window.location.pathname.replace('auth.html', 'index.html')
-        }
+        options: { redirectTo: window.location.origin + '/index.html' }
     });
 }
 
-function changeStep(id) {
-    document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('active'); });
-    document.getElementById(id).classList.add('active');
-}
+// ПРИВЯЗКА СОБЫТИЙ (Напрямую)
+window.onload = function() {
+    console.log("ОКНО ЗАГРУЖЕНО, ПРИВЯЗЫВАЮ КНОПКИ");
+    
+    document.getElementById('btn-continue').onclick = checkUserEmail;
+    document.getElementById('btn-google').onclick = signInWithGoogle;
+    
+    // Для регистрации и OTP кнопок (найдем по тексту или ID если добавил)
+    var regBtn = document.getElementById('btn-register-submit');
+    if(regBtn) regBtn.onclick = processRegistration;
+
+    var verifyBtn = document.getElementById('btn-verify-otp');
+    if(verifyBtn) verifyBtn.onclick = processVerifyOTP;
+};
