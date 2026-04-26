@@ -1,14 +1,186 @@
-.bill {
-    position: absolute;
-    width: 280px; /* Были 120px, стали большими */
-    opacity: 0.5;
-    filter: blur(2px);
-    animation: float 10s ease-in-out infinite;
-    z-index: 1;
+/* ОБНУЛЕНИЕ И ОСНОВА */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* Раскидываем по углам, чтобы не мешали тексту */
-.b1 { top: -5%; left: -5%; transform: rotate(-15deg); }
-.b2 { bottom: 5%; left: 2%; transform: rotate(10deg); animation-delay: 2s; }
-.b3 { top: 10%; right: -5%; transform: rotate(20deg); animation-delay: 1s; }
-.b4 { bottom: -5%; right: 5%; transform: rotate(-10deg); animation-delay: 3s; }
+body, html {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden; /* Запрет скролла, как ты и просил */
+    font-family: 'Inter', sans-serif;
+    background-color: #F8FAFF;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ФОНОВЫЕ КУПЮРЫ (БОЛЬШИЕ) */
+.money-rain {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Под текстом, но над фоном */
+    pointer-events: none; /* Чтобы не мешали нажимать на кнопки */
+}
+
+.bill {
+    position: absolute;
+    width: 320px; /* Большой размер */
+    height: auto;
+    opacity: 0.4;
+    filter: blur(2px); /* Легкое размытие для глубины */
+    animation: smoothFloat 12s ease-in-out infinite;
+}
+
+/* Раскидываем купюры по углам, чтобы центр остался чистым для текста */
+.b1 { 
+    top: -50px; 
+    left: -80px; 
+    transform: rotate(-15deg); 
+}
+
+.b2 { 
+    bottom: 5%; 
+    left: -40px; 
+    transform: rotate(12deg); 
+    animation-delay: 2s;
+    width: 280px;
+    opacity: 0.3;
+}
+
+.b3 { 
+    top: 10%; 
+    right: -100px; 
+    transform: rotate(25deg); 
+    animation-delay: 1s;
+    width: 380px; /* Самая большая */
+}
+
+.b4 { 
+    bottom: -60px; 
+    right: -20px; 
+    transform: rotate(-20deg); 
+    animation-delay: 4s;
+    filter: blur(4px); /* Сильнее размыта, как будто ближе к камере */
+}
+
+@keyframes smoothFloat {
+    0%, 100% { transform: translateY(0) rotate(var(--rot, 0deg)); }
+    50% { transform: translateY(-40px) rotate(calc(var(--rot, 0deg) + 5deg)); }
+}
+
+/* НАВИГАЦИЯ */
+.top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 40px 80px;
+    position: relative;
+    z-index: 10;
+}
+
+.logo {
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    color: #1D1D1F;
+}
+
+.logo span {
+    color: #007AFF;
+}
+
+.auth-btns {
+    display: flex;
+    gap: 16px;
+}
+
+/* КНОПКИ (СИНЯЯ И БЕЛАЯ) */
+.btn-blue, .btn-blue-large {
+    background: #007AFF;
+    color: #FFFFFF;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-weight: 600;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border: none;
+}
+
+.btn-white, .btn-white-large {
+    background: #FFFFFF;
+    color: #007AFF;
+    text-decoration: none;
+    padding: 12px 26px; /* Чуть меньше из-за border */
+    border-radius: 14px;
+    font-weight: 600;
+    border: 2px solid #007AFF;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-blue-large, .btn-white-large {
+    padding: 20px 45px;
+    font-size: 18px;
+}
+
+.btn-blue:hover, .btn-blue-large:hover {
+    background: #0062CC;
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px rgba(0, 122, 255, 0.3);
+}
+
+.btn-white:hover, .btn-white-large:hover {
+    background: #F5Faff;
+    transform: translateY(-3px);
+}
+
+/* ГЛАВНЫЙ КОНТЕНТ */
+.hero-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    z-index: 5;
+}
+
+h1 {
+    font-size: clamp(40px, 8vw, 80px);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -3px;
+    margin-bottom: 24px;
+    color: #1D1D1F;
+}
+
+.gradient {
+    background: linear-gradient(90deg, #007AFF, #00C6FF);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+p {
+    font-size: 22px;
+    color: #6E6E73;
+    max-width: 650px;
+    margin-bottom: 48px;
+    font-weight: 400;
+    line-height: 1.4;
+}
+
+.main-actions {
+    display: flex;
+    gap: 20px;
+}
+
+/* АДАПТИВНОСТЬ */
+@media (max-width: 768px) {
+    .top-nav { padding: 20px; }
+    .logo { font-size: 24px; }
+    .bill { width: 180px; } /* Уменьшаем купюры на мобилках */
+    .main-actions { flex-direction: column; width: 100%; padding: 0 40px; }
+    h1 { font-size: 48px; }
+}
