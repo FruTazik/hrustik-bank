@@ -30,36 +30,22 @@
         <h2 class="category-title">Популярное сегодня</h2>
         
         <div class="product-grid">
-            
-            <div class="product-card" onclick="location.href='item.html'">
+            <div class="product-card">
                 <div class="card-date">Дата создания: 20.04.2026</div>
-                
                 <div class="card-img-wrapper">
                     <img src="100.png" alt="Товар">
                 </div>
-                
                 <div class="card-info">
                     <div class="card-price">1 500 Хрустиков</div>
                     <div class="card-title">Набор валюты "Золотой Хруст"</div>
                 </div>
             </div>
-
-            <div class="product-card">
-                <div class="card-date">Дата создания: 19.04.2026</div>
-                <div class="card-img-wrapper">
-                    <img src="100.png" alt="Товар">
-                </div>
-                <div class="card-info">
-                    <div class="card-price">2 900 Хрустиков</div>
-                    <div class="card-title">Аккаунт с редкими скинами</div>
-                </div>
-            </div>
-
         </div>
     </main>
 
     <script>
-        // Проверка: если зашел первый раз — кидаем на welcome.html
+        // ЛОГИКА ПЕРЕХОДА:
+        // Если в памяти нет отметки, что пользователь видел приветствие - отправляем на welcome.html
         if (!localStorage.getItem('hrustik_user_visited')) {
             localStorage.setItem('hrustik_user_visited', 'true');
             window.location.href = 'welcome.html';
