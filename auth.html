@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" type="image/png" href="favicon.png">
-    <link rel="apple-touch-icon" href="favicon.png">
     <title>HRUSTIK | Авторизация</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="auth_style.css">
@@ -16,16 +14,12 @@
         <div id="step-email" class="step active">
             <h2>Войти</h2>
             <p>Используйте почту для входа или регистрации</p>
-            
             <div class="input-group">
                 <input type="email" id="email-input" placeholder="example@mail.com">
                 <span class="error-text" id="email-error" style="display: none;">Введите корректный адрес почты</span>
             </div>
-
             <button class="btn-blue" id="btn-continue">Продолжить</button>
-            
             <div class="divider">или</div>
-            
             <button class="btn-google" id="btn-google">
                 <img src="google.png" alt="G">
                 Войти через Google
@@ -35,39 +29,29 @@
         <div id="step-register" class="step">
             <h2>Создать профиль</h2>
             <p>Заполните данные, чтобы продолжить</p>
-
             <div class="input-group">
                 <input type="text" id="reg-name" placeholder="Ваше имя">
-                <span class="error-text">Как вас зовут?</span>
             </div>
-
             <div class="input-group">
-                <label style="font-size: 12px; color: #86868B; margin-left: 5px;">Дата рождения</label>
-                <input type="date" id="reg-birth">
-                <span class="error-text">Вам должно быть больше 7 лет</span>
+                <input type="text" id="reg-birth" placeholder="Дата рождения (ДД.ММ.ГГГГ)" inputmode="numeric" maxlength="10">
             </div>
-
             <div class="input-group">
                 <input type="password" id="reg-pass" placeholder="Придумайте пароль">
-                <span class="error-text">Минимум 6 символов</span>
             </div>
-
             <button class="btn-blue" id="btn-register-submit">Создать аккаунт</button>
         </div>
 
         <div id="step-otp" class="step">
             <h2>Подтверждение</h2>
-            <p id="otp-message">Мы отправили код на почту ...</p>
-            
-            <div class="otp-inputs">
-                <input type="text" maxlength="1" class="otp-field">
-                <input type="text" maxlength="1" class="otp-field">
-                <input type="text" maxlength="1" class="otp-field">
-                <input type="text" maxlength="1" class="otp-field">
-                <input type="text" maxlength="1" class="otp-field">
-                <input type="text" maxlength="1" class="otp-field">
+            <p id="otp-message">Введите 6 цифр из письма</p>
+            <div class="otp-inputs" id="otp-container">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
             </div>
-
             <button class="btn-blue" id="btn-verify-otp">Войти</button>
         </div>
     </div>
