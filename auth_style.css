@@ -109,6 +109,30 @@ input.invalid + .error-text { display: block; }
     transition: 0.2s;
 }
 
+.otp-inputs {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.otp-field {
+    width: 45px;
+    height: 55px;
+    text-align: center;
+    font-size: 24px;
+    font-weight: 700;
+    border: 1.5px solid #d2d2d7;
+    border-radius: 10px;
+    background: #f5f5f7;
+}
+
+.otp-field:focus {
+    border-color: #0071e3;
+    background: #fff;
+    outline: none;
+}
+
 .btn-google img {
     width: 24px; /* Подкорректировал под стандарт */
     height: 24px;
