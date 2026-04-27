@@ -13,7 +13,7 @@
     <div class="auth-card">
         <div id="step-email" class="step active">
             <h2>Войти</h2>
-            <p>Введите почту, чтобы получить код</p>
+            <p>Введите почту для получения кода</p>
             <div class="input-group">
                 <input type="email" id="email-input" placeholder="example@mail.com" autocomplete="email">
                 <span class="error-text" id="email-error" style="display: none;">Некорректная почта</span>
@@ -27,21 +27,21 @@
 
         <div id="step-otp" class="step">
             <h2>Код подтверждения</h2>
-            <p id="otp-message">Мы отправили 6 цифр на почту</p>
+            <p id="otp-message">6 цифр отправлены на вашу почту</p>
             <div class="otp-inputs">
-                <input type="text" maxlength="1" inputmode="numeric" class="otp-field" autocomplete="one-time-code">
+                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
                 <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
                 <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
                 <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
                 <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
                 <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
             </div>
-            <button class="btn-blue" id="btn-verify-otp">Подтвердить</button>
+            <button class="btn-blue" id="btn-verify-otp">Продолжить</button>
         </div>
 
         <div id="step-register" class="step">
             <h2>Почти готово</h2>
-            <p>Заполните данные профиля</p>
+            <p>Заполните данные вашего профиля</p>
             <div class="input-group">
                 <input type="text" id="reg-name" placeholder="Ваше имя" autocomplete="off">
             </div>
