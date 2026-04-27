@@ -1,21 +1,35 @@
+// Инициализация Supabase
 const supabaseUrl = 'https://yuhthantfmbsozvwdeuj.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1aHRoYW50Zm1ic296dndkZXVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDEzODEsImV4cCI6MjA5MjcxNzM4MX0.uzPZ7xL75IoixVJdcaoAwZSkA1WuhpINxWsjE5iBpg4';
-const supabase = supabasejs.createClient(supabaseUrl, supabaseKey);
+const client = window.supabasejs || window.supabase;
+const supabase = client.createClient(supabaseUrl, supabaseKey);
 
 let userEmail = "";
 
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Привязка кнопок
-    document.getElementById('btn-continue').onclick = sendCode;
-    document.getElementById('btn-google').onclick = loginWithGoogle;
-    document.getElementById('btn-verify-otp').onclick = verifyCode;
-    document.getElementById('btn-finish-reg').onclick = finishRegistration;
+    console.log("Скрипт запущен, кнопки привязываются...");
 
-    // 2. Настройка полей OTP (умный переход и удаление)
+    // Привязка кнопки отправки почты
+    const btnContinue = document.getElementById('btn-continue');
+    if (btnContinue) btnContinue.onclick = sendCode;
+
+    // Привязка кнопки подтверждения кода
+    const btnVerify = document.getElementById('btn-verify-otp');
+    if (btnVerify) btnVerify.onclick = verifyCode;
+
+    // Привязка кнопки завершения регистрации
+    const btnFinish = document.getElementById('btn-finish-reg');
+    if (btnFinish) btnFinish.onclick = finishRegistration;
+
+    // Привязка Google
+    const btnGoogle = document.getElementById('btn-google');
+    if (btnGoogle) btnGoogle.onclick = loginWithGoogle;
+
+    // Логика полей OTP
     const otpFields = document.querySelectorAll('.otp-field');
     otpFields.forEach((f, i) => {
         f.oninput = (e) => {
-            f.value = f.value.replace(/\D/g, '');
+            f.value = f.value.replace(/\D/g, ''); // Только цифры
             if (f.value && i < 5) otpFields[i+1].focus();
         };
         f.onkeydown = (e) => {
@@ -23,38 +37,46 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // 3. Маска даты
+    // Маска для даты
     const birth = document.getElementById('reg-birth');
-    birth.oninput = () => {
-        let v = birth.value.replace(/\D/g, '');
-        if (v.length > 2) v = v.slice(0,2) + '.' + v.slice(2);
-        if (v.length > 5) v = v.slice(0,5) + '.' + v.slice(5,10);
-        birth.value = v;
-    };
+    if (birth) {
+        birth.oninput = () => {
+            let v = birth.value.replace(/\D/g, '');
+            if (v.length > 2) v = v.slice(0,2) + '.' + v.slice(2);
+            if (v.length > 5) v = v.slice(0,5) + '.' + v.slice(5,10);
+            birth.value = v;
+        };
+    }
 });
 
-// СЦЕНАРИЙ: Отправка кода
+// 1. Отправка OTP кода
 async function sendCode() {
+    console.log("Нажата отправка кода");
     userEmail = document.getElementById('email-input').value.trim();
-    if (!userEmail.includes('@')) return alert("Введите почту!");
+    if (!userEmail.includes('@')) {
+        document.getElementById('email-error').style.display = 'block';
+        return;
+    }
 
     const { error } = await supabase.auth.signInWithOtp({ email: userEmail });
-    if (error) alert(error.message);
-    else changeStep('step-otp');
+    if (error) {
+        alert("Ошибка: " + error.message);
+    } else {
+        console.log("Код отправлен успешно");
+        changeStep('step-otp');
+    }
 }
 
-// СЦЕНАРИЙ: Вход через Google (тоже через OTP Supabase делает это под капотом)
-async function loginWithGoogle() {
-    await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: { redirectTo: window.location.origin + '/index.html' }
-    });
-}
-
-// СЦЕНАРИЙ: Проверка кода и маршрутизация (Новый или Старый)
+// 2. Проверка кода
 async function verifyCode() {
+    console.log("Нажато подтверждение кода");
     let token = "";
     document.querySelectorAll('.otp-field').forEach(f => token += f.value);
+
+    if (token.length < 6) {
+        alert("Введите все 6 цифр кода");
+        return;
+    }
 
     const { data, error } = await supabase.auth.verifyOTP({
         email: userEmail,
@@ -62,9 +84,14 @@ async function verifyCode() {
         type: 'email'
     });
 
-    if (error) return alert("Неверный код");
+    if (error) {
+        alert("Неверный или просроченный код");
+        return;
+    }
 
-    // Проверяем, есть ли запись в таблице profiles
+    console.log("Код верный, проверяем профиль юзера...");
+    
+    // Проверка: новый это юзер или старый
     const { data: profile } = await supabase
         .from('profiles')
         .select('full_name')
@@ -72,26 +99,43 @@ async function verifyCode() {
         .maybeSingle();
 
     if (profile && profile.full_name) {
-        // Юзер есть — в магазин
+        console.log("Юзер найден, вход...");
         window.location.href = 'index.html';
     } else {
-        // Юзера нет — на заполнение данных
+        console.log("Новый юзер, переход к анкете");
         changeStep('step-register');
     }
 }
 
-// Завершение регистрации (создание профиля)
+// 3. Сохранение данных профиля
 async function finishRegistration() {
-    const name = document.getElementById('reg-name').value;
-    const birth = document.getElementById('reg-birth').value;
+    console.log("Завершение регистрации...");
+    const name = document.getElementById('reg-name').value.trim();
+    const birth = document.getElementById('reg-birth').value.trim();
+
+    if (!name || birth.length < 10) {
+        alert("Заполните все поля корректно");
+        return;
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
 
     const { error } = await supabase.from('profiles').insert([
         { id: user.id, email: user.email, full_name: name, birthday: birth }
     ]);
 
-    if (error) alert("Ошибка сохранения: " + error.message);
-    else window.location.href = 'index.html';
+    if (error) {
+        alert("Ошибка базы данных: " + error.message);
+    } else {
+        window.location.href = 'index.html';
+    }
+}
+
+async function loginWithGoogle() {
+    await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: { redirectTo: window.location.origin + '/index.html' }
+    });
 }
 
 function changeStep(id) {
