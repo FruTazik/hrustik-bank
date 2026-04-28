@@ -1,47 +1,46 @@
-// Инициализация Supabase
-const supabaseUrl = 'https://yuhthantfmbsozvwdeuj.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1aHRoYW50Zm1ic296dndkZXVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDEzODEsImV4cCI6MjA5MjcxNzM4MX0.uzPZ7xL75IoixVJdcaoAwZSkA1WuhpINxWsjE5iBpg4';
-const client = window.supabasejs || window.supabase;
-const supabase = client.createClient(supabaseUrl, supabaseKey);
+// Проверка, чтобы не объявлять дважды
+if (typeof supabase === 'undefined') {
+    var supabaseUrl = 'https://yuhthantfmbsozvwdeuj.supabase.co';
+    var supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl1aHRoYW50Zm1ic296dndkZXVqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzcxNDEzODEsImV4cCI6MjA5MjcxNzM4MX0.uzPZ7xL75IoixVJdcaoAwZSkA1WuhpINxWsjE5iBpg4';
+    
+    // Пытаемся найти библиотеку под разными именами (supabasejs или supabase)
+    var lib = window.supabasejs || window.supabase;
+    
+    if (!lib) {
+        console.error("Supabase library not found!");
+    } else {
+        var supabase = lib.createClient(supabaseUrl, supabaseKey);
+    }
+}
 
-let userEmail = "";
+var userEmail = "";
 
-document.addEventListener('DOMContentLoaded', () => {
-    console.log("Скрипт запущен, кнопки привязываются...");
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("Кнопки инициализированы");
 
-    // Привязка кнопки отправки почты
-    const btnContinue = document.getElementById('btn-continue');
-    if (btnContinue) btnContinue.onclick = sendCode;
+    // Обработка кликов
+    document.getElementById('btn-continue').onclick = sendCode;
+    document.getElementById('btn-verify-otp').onclick = verifyCode;
+    document.getElementById('btn-finish-reg').onclick = finishRegistration;
+    document.getElementById('btn-google').onclick = loginWithGoogle;
 
-    // Привязка кнопки подтверждения кода
-    const btnVerify = document.getElementById('btn-verify-otp');
-    if (btnVerify) btnVerify.onclick = verifyCode;
-
-    // Привязка кнопки завершения регистрации
-    const btnFinish = document.getElementById('btn-finish-reg');
-    if (btnFinish) btnFinish.onclick = finishRegistration;
-
-    // Привязка Google
-    const btnGoogle = document.getElementById('btn-google');
-    if (btnGoogle) btnGoogle.onclick = loginWithGoogle;
-
-    // Логика полей OTP
-    const otpFields = document.querySelectorAll('.otp-field');
-    otpFields.forEach((f, i) => {
-        f.oninput = (e) => {
-            f.value = f.value.replace(/\D/g, ''); // Только цифры
+    // OTP поля
+    var otpFields = document.querySelectorAll('.otp-field');
+    otpFields.forEach(function(f, i) {
+        f.oninput = function() {
+            f.value = f.value.replace(/\D/g, '');
             if (f.value && i < 5) otpFields[i+1].focus();
         };
-        f.onkeydown = (e) => {
+        f.onkeydown = function(e) {
             if (e.key === 'Backspace' && !f.value && i > 0) otpFields[i-1].focus();
         };
     });
 
-    // Маска для даты
-    const birth = document.getElementById('reg-birth');
+    // Маска даты
+    var birth = document.getElementById('reg-birth');
     if (birth) {
-        birth.oninput = () => {
-            let v = birth.value.replace(/\D/g, '');
+        birth.oninput = function() {
+            var v = birth.value.replace(/\D/g, '');
             if (v.length > 2) v = v.slice(0,2) + '.' + v.slice(2);
             if (v.length > 5) v = v.slice(0,5) + '.' + v.slice(5,10);
             birth.value = v;
@@ -49,96 +48,66 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// 1. Отправка OTP кода
 async function sendCode() {
-    console.log("Нажата отправка кода");
     userEmail = document.getElementById('email-input').value.trim();
     if (!userEmail.includes('@')) {
         document.getElementById('email-error').style.display = 'block';
         return;
     }
-
-    const { error } = await supabase.auth.signInWithOtp({ email: userEmail });
-    if (error) {
-        alert("Ошибка: " + error.message);
-    } else {
-        console.log("Код отправлен успешно");
-        changeStep('step-otp');
-    }
+    var res = await supabase.auth.signInWithOtp({ email: userEmail });
+    if (res.error) alert(res.error.message);
+    else changeStep('step-otp');
 }
 
-// 2. Проверка кода
 async function verifyCode() {
-    console.log("Нажато подтверждение кода");
-    let token = "";
-    document.querySelectorAll('.otp-field').forEach(f => token += f.value);
+    var token = "";
+    document.querySelectorAll('.otp-field').forEach(function(f) { token += f.value; });
+    
+    if (token.length < 6) return alert("Введите код полностью");
 
-    if (token.length < 6) {
-        alert("Введите все 6 цифр кода");
-        return;
-    }
-
-    const { data, error } = await supabase.auth.verifyOTP({
+    var res = await supabase.auth.verifyOTP({
         email: userEmail,
         token: token,
         type: 'email'
     });
 
-    if (error) {
-        alert("Неверный или просроченный код");
-        return;
-    }
+    if (res.error) return alert("Неверный код");
 
-    console.log("Код верный, проверяем профиль юзера...");
-    
-    // Проверка: новый это юзер или старый
-    const { data: profile } = await supabase
-        .from('profiles')
-        .select('full_name')
-        .eq('id', data.user.id)
-        .maybeSingle();
+    // Проверка профиля
+    var prof = await supabase.from('profiles').select('full_name').eq('id', res.data.user.id).maybeSingle();
 
-    if (profile && profile.full_name) {
-        console.log("Юзер найден, вход...");
+    if (prof.data && prof.data.full_name) {
         window.location.href = 'index.html';
     } else {
-        console.log("Новый юзер, переход к анкете");
         changeStep('step-register');
     }
 }
 
-// 3. Сохранение данных профиля
 async function finishRegistration() {
-    console.log("Завершение регистрации...");
-    const name = document.getElementById('reg-name').value.trim();
-    const birth = document.getElementById('reg-birth').value.trim();
+    var name = document.getElementById('reg-name').value.trim();
+    var birth = document.getElementById('reg-birth').value.trim();
+    
+    if (!name || birth.length < 10) return alert("Заполните данные");
 
-    if (!name || birth.length < 10) {
-        alert("Заполните все поля корректно");
-        return;
-    }
+    var userRes = await supabase.auth.getUser();
+    var user = userRes.data.user;
 
-    const { data: { user } } = await supabase.auth.getUser();
-
-    const { error } = await supabase.from('profiles').insert([
+    var ins = await supabase.from('profiles').insert([
         { id: user.id, email: user.email, full_name: name, birthday: birth }
     ]);
 
-    if (error) {
-        alert("Ошибка базы данных: " + error.message);
-    } else {
-        window.location.href = 'index.html';
-    }
+    if (ins.error) alert(ins.error.message);
+    else window.location.href = 'index.html';
 }
 
 async function loginWithGoogle() {
     await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.origin + '/index.html' }
+        options: { redirectTo: window.location.origin + window.location.pathname.replace('auth.html', 'index.html') }
     });
 }
 
 function changeStep(id) {
-    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.step').forEach(function(s) { s.classList.remove('active'); });
     document.getElementById(id).classList.add('active');
 }
