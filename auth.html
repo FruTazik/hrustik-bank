@@ -15,7 +15,7 @@
             <h2>Войти</h2>
             <p>Введите почту для получения кода</p>
             <div class="input-group">
-                <input type="email" id="email-input" placeholder="example@mail.com" autocomplete="email">
+                <input type="email" id="email-input" placeholder="example@mail.com">
                 <span class="error-text" id="email-error" style="display: none;">Некорректная почта</span>
             </div>
             <button class="btn-blue" id="btn-continue">Продолжить</button>
@@ -27,7 +27,7 @@
 
         <div id="step-otp" class="step">
             <h2>Код подтверждения</h2>
-            <p id="otp-message">6 цифр отправлены на вашу почту</p>
+            <p>Введите 6 цифр из письма</p>
             <div class="otp-inputs">
                 <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
                 <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
@@ -41,12 +41,12 @@
 
         <div id="step-register" class="step">
             <h2>Почти готово</h2>
-            <p>Заполните данные вашего профиля</p>
+            <p>Заполните данные профиля</p>
             <div class="input-group">
                 <input type="text" id="reg-name" placeholder="Ваше имя" autocomplete="off">
             </div>
             <div class="input-group">
-                <input type="text" id="reg-birth" placeholder="Дата рождения (ДД.ММ.ГГГГ)" inputmode="numeric" maxlength="10" autocomplete="off">
+                <input type="text" id="reg-birth" placeholder="Дата рождения (ДД.ММ.ГГГГ)" inputmode="numeric" maxlength="10">
             </div>
             <button class="btn-blue" id="btn-finish-reg">Завершить</button>
         </div>
