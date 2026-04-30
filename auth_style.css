@@ -1,128 +1,72 @@
-* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-
-body { 
-    background: #F5F5F7; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
+/* --- СТИЛИ АВТОРИЗАЦИИ --- */
+body {
+    background: #f5f5f7;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     min-height: 100vh;
-    padding: 20px;
 }
 
 .auth-card {
-    background: white; 
-    padding: 60px; /* Увеличили внутренние отступы */
-    border-radius: 32px;
-    width: 100%; 
-    max-width: 500px; /* Сделали само окно шире */
-    box-shadow: 0 25px 50px rgba(0,0,0,0.06);
+    background: #fff;
+    width: 100%;
+    max-width: 400px;
+    padding: 40px 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
     text-align: center;
-    transition: 0.3s;
 }
 
-.step { display: none; }
-.step.active { display: block; animation: fadeIn 0.5s ease forwards; }
-
-h2 { font-weight: 800; font-size: 32px; margin-bottom: 12px; letter-spacing: -1px; }
-p { color: #6E6E73; margin-bottom: 35px; font-size: 16px; line-height: 1.5; }
-
-.input-group { margin-bottom: 25px; text-align: left; }
-
-input {
-    width: 100%; 
-    padding: 18px; 
-    border-radius: 16px;
-    border: 1px solid #D2D2D7; 
-    font-size: 16px; 
-    background: #FBFBFD;
-    transition: 0.2s;
+.step {
+    display: none;
 }
 
-input:focus {
-    border-color: #007AFF;
-    background: #FFFFFF;
-    box-shadow: 0 0 0 4px rgba(0,122,255,0.1);
+.step.active {
+    display: block;
 }
 
-/* Красное обведение при ошибке */
-input.invalid { 
-    border-color: #FF3B30 !important; 
-    background: #FFF2F2 !important; 
+h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 10px;
 }
-.error-text { 
-    color: #FF3B30; 
-    font-size: 13px; 
-    display: none; 
-    margin-top: 8px; 
-    margin-left: 5px;
-    font-weight: 500;
-}
-input.invalid + .error-text { display: block; }
 
-.btn-blue {
-    width: 100%; 
-    background: #007AFF; 
-    color: white; 
-    border: none;
-    padding: 18px; 
-    border-radius: 16px; 
-    font-weight: 600; 
+p {
+    color: #86868b;
+    margin-bottom: 25px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+input[type="email"], 
+input[type="text"], 
+input[type="password"] {
+    width: 100%;
+    padding: 15px;
+    border: 1px solid #d2d2d7;
+    border-radius: 12px;
     font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s;
+    background: #fbfbfd;
+    outline: none;
 }
 
-.btn-blue:hover {
-    background: #0062CC;
-    transform: translateY(-2px);
-}
-
-.divider {
-    margin: 25px 0;
-    color: #86868B;
-    font-size: 14px;
-    display: flex;
-    align-items: center;
-}
-.divider::before, .divider::after {
-    content: "";
-    flex: 1;
-    height: 1px;
-    background: #D2D2D7;
-    margin: 0 15px;
-}
-
-/* Кнопка Google с твоим логотипом */
-.btn-google {
-    width: 100%; 
-    background: white; 
-    border: 1px solid #D2D2D7;
-    padding: 16px; 
-    border-radius: 16px; 
-    display: flex; 
-    align-items: center;
-    justify-content: center; 
-    gap: 12px; 
-    cursor: pointer; 
-    font-weight: 600;
-    font-size: 16px;
-    transition: 0.2s;
-}
-
+/* --- OTP ПОЛЯ В РЯД --- */
 .otp-inputs {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    gap: 8px;
     margin: 20px 0;
 }
 
 .otp-field {
-    width: 45px;
-    height: 55px;
+    width: 100%;
+    height: 50px;
     text-align: center;
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 700;
-    border: 1.5px solid #d2d2d7;
+    border: 1px solid #d2d2d7;
     border-radius: 10px;
     background: #f5f5f7;
 }
@@ -130,17 +74,51 @@ input.invalid + .error-text { display: block; }
 .otp-field:focus {
     border-color: #0071e3;
     background: #fff;
-    outline: none;
+}
+
+/* --- КНОПКИ --- */
+.btn-blue {
+    background: #0071e3;
+    color: #fff;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    width: 100%;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-google {
+    background: #fff;
+    border: 1px solid #d2d2d7;
+    padding: 12px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    cursor: pointer;
+    margin-top: 15px;
 }
 
 .btn-google img {
-    width: 24px; /* Подкорректировал под стандарт */
-    height: 24px;
+    width: 20px;
 }
 
-.btn-google:hover { background: #F5F5F7; }
+.divider {
+    margin: 20px 0;
+    color: #86868b;
+    font-size: 14px;
+}
 
-@keyframes fadeIn { 
-    from { opacity: 0; transform: translateY(20px); } 
-    to { opacity: 1; transform: translateY(0); } 
+/* Адаптация для телефонов */
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 30px 20px;
+        box-shadow: none;
+        background: transparent;
+    }
 }
