@@ -1,4 +1,4 @@
-/* --- БАЗОВЫЕ НАСТРОЙКИ И ШРИФТЫ --- */
+/* Подключаем шрифт Inter */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
 
 * {
@@ -6,31 +6,33 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Inter', -apple-system, sans-serif;
-    -webkit-tap-highlight-color: transparent;
+    -webkit-tap-highlight-color: transparent; /* Убирает синий блик при нажатии на iOS/Android */
 }
 
 body {
     background-color: #f5f5f7;
     color: #1d1d1f;
+    line-height: 1.5;
 }
 
-/* --- СЕТКА ТОВАРОВ (5 В РЯД НА ТЕЛЕФОНЕ) --- */
+/* --- КОНТЕЙНЕР --- */
 .container {
     max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 10px;
+    margin: 0 auto;
+    padding: 20px 10px;
 }
 
+/* --- СЕТКА ТОВАРОВ --- */
 .products-grid {
     display: grid;
-    /* По умолчанию (ПК) */
+    /* На ПК: адаптивные колонки, минимум 180px */
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
     gap: 15px;
 }
 
-/* --- КАРТОЧКА ТОВАРА (БЕЗ АНИМАЦИЙ НАВОДКИ) --- */
+/* --- КАРТОЧКА ТОВАРА --- */
 .product-card {
-    background: #fff;
+    background: #ffffff;
     border: 1px solid #e5e5e7;
     border-radius: 12px;
     padding: 12px;
@@ -38,12 +40,13 @@ body {
     flex-direction: column;
     text-decoration: none;
     color: inherit;
-    transition: background-color 0.2s ease; /* Только цвет */
+    transition: background-color 0.1s ease; /* Плавный отклик только по цвету */
 }
 
-/* При нажатии карточка чуть темнеет (отклик) */
+/* ЭФФЕКТ ПРИ НАЖАТИИ (ВМЕСТО НАВЕДЕНИЯ) */
 .product-card:active {
-    background-color: #f2f2f7;
+    background-color: #f2f2f7; /* Слегка темнеет при тапе/клике */
+    border-color: #d2d2d7;
 }
 
 .product-card img {
@@ -60,20 +63,24 @@ body {
     margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis;
+    text-overflow: ellipsis; /* Обрезка длинного текста */
 }
 
 .product-card .price {
     font-size: 16px;
     font-weight: 800;
+    color: #000;
 }
 
-/* --- АДАПТАЦИЯ ПОД ТЕЛЕФОН (PLAYEROK STYLE) --- */
+/* --- МОБИЛЬНАЯ АДАПТАЦИЯ (5 В РЯД) --- */
 @media (max-width: 600px) {
+    .container {
+        padding: 10px 5px;
+    }
+
     .products-grid {
-        grid-template-columns: repeat(5, 1fr); /* 5 товаров в ряд */
-        gap: 4px;
-        padding: 5px;
+        grid-template-columns: repeat(5, 1fr); /* Ровно 5 колонок как на Playerok */
+        gap: 4px; /* Минимальные отступы */
     }
 
     .product-card {
@@ -83,27 +90,35 @@ body {
     }
 
     .product-card h3 {
-        font-size: 8px; /* Вынужденно мелко для 5 в ряд */
+        font-size: 8px; /* Очень компактно для узких колонок */
+        line-height: 1.1;
+        margin-bottom: 2px;
     }
 
     .product-card .price {
         font-size: 10px;
     }
+
+    .product-card img {
+        border-radius: 4px;
+        margin-bottom: 4px;
+    }
 }
 
-/* --- КНОПКИ С ОТКЛИКОМ --- */
+/* --- ОБЩИЕ КНОПКИ --- */
 .btn-blue {
     background: #0071e3;
     color: #fff;
     border: none;
     padding: 12px 20px;
-    border-radius: 8px;
+    border-radius: 10px;
     font-weight: 600;
     cursor: pointer;
-    transition: background 0.2s;
+    text-align: center;
+    transition: background 0.2s, transform 0.1s;
 }
 
 .btn-blue:active {
-    background: #005bb7; /* Цвет меняется при нажатии */
-    transform: scale(0.98); /* Легкий эффект нажатия кнопки */
+    background: #005bb7;
+    transform: scale(0.96); /* Эффект физического нажатия */
 }
