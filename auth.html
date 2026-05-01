@@ -3,55 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HRUSTIK | Авторизация</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="auth_style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>Современная плавающая панель</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="auth-card">
-        <div id="step-email" class="step active">
-            <h2>Войти</h2>
-            <p>Введите почту для получения кода</p>
-            <div class="input-group">
-                <input type="email" id="email-input" placeholder="example@mail.com">
-                <span class="error-text" id="email-error" style="display: none;">Некорректная почта</span>
+    <nav class="floating-header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="#">MODERN<span>UI</span></a>
             </div>
-            <button class="btn-blue" id="btn-continue">Продолжить</button>
-            <div class="divider">или</div>
-            <button class="btn-google" id="btn-google">
-                <img src="google.png" alt="G"> Войти через Google
-            </button>
-        </div>
+            
+            <ul class="nav-links">
+                <li><a href="#home">Главная</a></li>
+                <li><a href="#projects">Проекты</a></li>
+                <li><a href="#about">О нас</a></li>
+                <li><a href="#services">Услуги</a></li>
+            </ul>
 
-        <div id="step-otp" class="step">
-            <h2>Код подтверждения</h2>
-            <p>Введите 6 цифр из письма</p>
-            <div class="otp-inputs">
-                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
-                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
-                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
-                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
-                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
-                <input type="text" maxlength="1" inputmode="numeric" class="otp-field">
+            <div class="actions">
+                <button class="btn-primary">Начать работу</button>
             </div>
-            <button class="btn-blue" id="btn-verify-otp">Продолжить</button>
         </div>
+    </nav>
 
-        <div id="step-register" class="step">
-            <h2>Почти готово</h2>
-            <p>Заполните данные профиля</p>
-            <div class="input-group">
-                <input type="text" id="reg-name" placeholder="Ваше имя" autocomplete="off">
-            </div>
-            <div class="input-group">
-                <input type="text" id="reg-birth" placeholder="Дата рождения (ДД.ММ.ГГГГ)" inputmode="numeric" maxlength="10">
-            </div>
-            <button class="btn-blue" id="btn-finish-reg">Завершить</button>
-        </div>
-    </div>
+    <main class="content">
+        <section id="home">
+            <h1>Красивый «стеклянный» хедер</h1>
+            <p>Прокрутите страницу вниз, чтобы увидеть эффект Glassmorphism в действии.</p>
+        </section>
+        
+        <!-- Дополнительный контент для скролла -->
+        <div class="spacer"></div>
+        <section id="projects">
+            <h2>Наши проекты</h2>
+            <div class="box"></div>
+            <div class="box"></div>
+        </section>
+    </main>
 
-    <script src="auth_logic.js"></script>
 </body>
 </html>
