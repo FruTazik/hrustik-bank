@@ -1,124 +1,135 @@
-/* Подключаем шрифт Inter */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
-
+/* Обнуление стилей */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', -apple-system, sans-serif;
-    -webkit-tap-highlight-color: transparent; /* Убирает синий блик при нажатии на iOS/Android */
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+:root {
+    --bg-color: #f0f2f5;
+    --accent-color: #007AFF; /* Цвет кнопок */
+    --text-dark: #1d1d1f;
+    --glass-bg: rgba(255, 255, 255, 0.72); /* Прозрачность фона */
+    --glass-border: rgba(255, 255, 255, 0.4);
 }
 
 body {
-    background-color: #f5f5f7;
-    color: #1d1d1f;
-    line-height: 1.5;
+    background-color: var(--bg-color);
+    /* Фоновый градиент для наглядности прозрачности */
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 200vh; /* Чтобы была прокрутка */
+    color: var(--text-dark);
 }
 
-/* --- КОНТЕЙНЕР --- */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px 10px;
+/* --- ПЛАВАЮЩАЯ ПАНЕЛЬ --- */
+.floating-header {
+    position: fixed;
+    top: 20px; /* Отступ от верхнего края */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 1100px;
+    z-index: 1000;
+
+    /* Эффект матового стекла */
+    background: var(--glass-bg);
+    backdrop-filter: blur(15px); 
+    -webkit-backdrop-filter: blur(15px); /* Для Safari */
+    
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
 }
 
-/* --- СЕТКА ТОВАРОВ --- */
-.products-grid {
-    display: grid;
-    /* На ПК: адаптивные колонки, минимум 180px */
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 15px;
-}
-
-/* --- КАРТОЧКА ТОВАРА --- */
-.product-card {
-    background: #ffffff;
-    border: 1px solid #e5e5e7;
-    border-radius: 12px;
-    padding: 12px;
+.header-container {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 24px;
+}
+
+/* Логотип */
+.logo a {
     text-decoration: none;
-    color: inherit;
-    transition: background-color 0.1s ease; /* Плавный отклик только по цвету */
-}
-
-/* ЭФФЕКТ ПРИ НАЖАТИИ (ВМЕСТО НАВЕДЕНИЯ) */
-.product-card:active {
-    background-color: #f2f2f7; /* Слегка темнеет при тапе/клике */
-    border-color: #d2d2d7;
-}
-
-.product-card img {
-    width: 100%;
-    aspect-ratio: 1/1;
-    object-fit: cover;
-    border-radius: 8px;
-    margin-bottom: 8px;
-}
-
-.product-card h3 {
-    font-size: 14px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* Обрезка длинного текста */
-}
-
-.product-card .price {
-    font-size: 16px;
+    color: var(--text-dark);
     font-weight: 800;
-    color: #000;
+    font-size: 1.2rem;
+    letter-spacing: -0.5px;
 }
 
-/* --- МОБИЛЬНАЯ АДАПТАЦИЯ (5 В РЯД) --- */
-@media (max-width: 600px) {
-    .container {
-        padding: 10px 5px;
-    }
-
-    .products-grid {
-        grid-template-columns: repeat(5, 1fr); /* Ровно 5 колонок как на Playerok */
-        gap: 4px; /* Минимальные отступы */
-    }
-
-    .product-card {
-        padding: 6px;
-        border-radius: 6px;
-        border: 0.5px solid #d2d2d7;
-    }
-
-    .product-card h3 {
-        font-size: 8px; /* Очень компактно для узких колонок */
-        line-height: 1.1;
-        margin-bottom: 2px;
-    }
-
-    .product-card .price {
-        font-size: 10px;
-    }
-
-    .product-card img {
-        border-radius: 4px;
-        margin-bottom: 4px;
-    }
+.logo span {
+    color: var(--accent-color);
 }
 
-/* --- ОБЩИЕ КНОПКИ --- */
-.btn-blue {
-    background: #0071e3;
-    color: #fff;
+/* Навигация */
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: opacity 0.2s ease;
+}
+
+.nav-links a:hover {
+    opacity: 0.6;
+}
+
+/* Кнопка */
+.btn-primary {
+    background: var(--accent-color);
+    color: white;
     border: none;
-    padding: 12px 20px;
-    border-radius: 10px;
+    padding: 10px 20px;
+    border-radius: 12px;
     font-weight: 600;
     cursor: pointer;
-    text-align: center;
-    transition: background 0.2s, transform 0.1s;
+    transition: transform 0.2s ease;
 }
 
-.btn-blue:active {
-    background: #005bb7;
-    transform: scale(0.96); /* Эффект физического нажатия */
+.btn-primary:hover {
+    transform: scale(1.05);
+}
+
+/* --- ОФОРМЛЕНИЕ КОНТЕНТА --- */
+.content {
+    padding-top: 150px;
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+}
+
+.spacer {
+    height: 400px;
+}
+
+.box {
+    background: white;
+    height: 300px;
+    margin: 20px 0;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+/* Адаптив для мобилок */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none; /* Скрываем ссылки на мобильных (обычно тут делают бургер) */
+    }
+    
+    .floating-header {
+        width: 95%;
+        top: 10px;
+    }
 }
